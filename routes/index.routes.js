@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { saludo, ping, polo, abc} from "../controllers/index.controllers.js";
+import { saludo, ping, polo, abc, items} from "../controllers/index.controllers.js";
 
 const router = Router();
 
@@ -8,5 +8,6 @@ router.get("/", saludo);
 router.get("/ping", ping);
 router.get("/marco", polo);
 router.get("/a/b/c", abc);
+router.get("/items", items);
 
 export default router;
