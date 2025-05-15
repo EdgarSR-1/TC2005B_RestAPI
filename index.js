@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import morgan from "morgan";
+import cors from "cors";
 import indexRoutes from "./routes/index.routes.js";
 import userRoutes from "./routes/users.routes.js";
 // comandos para users controllers
@@ -13,9 +15,15 @@ import userRoutes from "./routes/users.routes.js";
 //     console.log("The solution is: ", results);
 // });
 
+
+
 const app = express();
 
 app.use(express.json());
+app.use(morgan("dev"));
+app.use(cors());
+
+
 
 app.use(indexRoutes)
 app.use(userRoutes)

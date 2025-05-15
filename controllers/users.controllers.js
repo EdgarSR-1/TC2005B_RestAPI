@@ -1,5 +1,6 @@
+import { hash } from "crypto";
 import { pool } from "../db/db.js";
-
+import {getSalt, hashPassword} from "../utils/hash.js";
 
 
 export const getUsers = (req,res) => {
@@ -25,11 +26,13 @@ export const getUser = (req,res) => {
 };
 export const postUser = (req, res) => {
     const { name, username, password, age } = req.body;
-
+    const salt = getSalt();
+    const hash = hashPassword(password, salt);
+    const hashedPassword = salt + hash;
     // First, insert the user into the database
     pool.execute(
         "insert into users (name, username, password, age) values (?,?,?,?)",
-        [name, username, password, age],
+        [name, username, hashedPassword, age],
         (error, results) => {
             if (error) {
                 res.status(500).json({ msg: error, users: [] });
@@ -88,12 +91,14 @@ export const login = (req,res) => {
             }
             if (results.length < 1 ){
                 res.
-                status(401)
-                .json({ isLogin : false, msg: "credenciales invalidas", user: {} })
+                    status(401)
+                    .json({ isLogin : false, msg: "credenciales invalidas", user: {} })
                 return;
             }
             // comparación de constraseña
-            if(results[0].password === password){
+            const salt = results[0].password.substring(0, process.env.SALT_SIZE);
+            const hash = hashPassword(password, salt);
+            if(results[0].password === salt + hash){
                 res.status(200).json({ isLogin : true, msg: "0k", user: results[0] })
             } else {
                 res.
